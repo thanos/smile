@@ -152,51 +152,51 @@ NULL_BIT = 0x0
 
 #  Shared strings are back references for last 63 short (< 64 byte) string values
 #  NOTE: 0x00 is reserved, not used with current version (may be used in future)
-TOKEN_PREFIX_SHARED_STRING_SHORT = 0x00
+@TOKEN_PREFIX_SHARED_STRING_SHORT 0x00
 
 #  literals are put between 0x20 and 0x3F to reserve markers (smiley), along with ints/doubles
 # public final static int TOKEN_PREFIX_MISC_NUMBERS = 0x20;
-TOKEN_PREFIX_SHARED_STRING_LONG = 0xEC
-TOKEN_PREFIX_TINY_ASCII = 0x40
-TOKEN_PREFIX_SMALL_ASCII = 0x60
-TOKEN_PREFIX_TINY_UNICODE = 0x80
-TOKEN_PREFIX_SHORT_UNICODE = 0xA0
+@TOKEN_PREFIX_SHARED_STRING_LONG 0xEC
+@TOKEN_PREFIX_TINY_ASCII 0x40
+@TOKEN_PREFIX_SMALL_ASCII 0x60
+@TOKEN_PREFIX_TINY_UNICODE 0x80
+@TOKEN_PREFIX_SHORT_UNICODE 0xA0
 
 #  Small ints are 4-bit (-16 to +15) integer constants
-TOKEN_PREFIX_SMALL_INT = 0xC0
+@TOKEN_PREFIX_SMALL_INT  0xC0
 
 #  And misc types have empty at the end too, to reserve 0xF8 - 0xFF
-TOKEN_PREFIX_MISC_OTHER = 0xE0
+@TOKEN_PREFIX_MISC_OTHER 0xE0
 
 #
 #
 #  Token literals, normal mode
 # First, non-structured literals
-TOKEN_LITERAL_EMPTY_STRING = 0x20
-TOKEN_LITERAL_NULL = 0x21
-TOKEN_LITERAL_FALSE = 0x22
-TOKEN_LITERAL_TRUE = 0x23
+@TOKEN_LITERAL_EMPTY_STRING 0x20
+@TOKEN_LITERAL_NULL 0x21
+@TOKEN_LITERAL_FALSE 0x22
+@TOKEN_LITERAL_TRUE 0x23
 
 #  And then structured literals
-TOKEN_LITERAL_START_ARRAY = 0xF8
-TOKEN_LITERAL_END_ARRAY = 0xF9
-TOKEN_LITERAL_START_OBJECT = 0xFA
-TOKEN_LITERAL_END_OBJECT = 0xFB
+@TOKEN_LITERAL_START_ARRAY 0xF8
+@TOKEN_LITERAL_END_ARRAY 0xF9
+@TOKEN_LITERAL_START_OBJECT 0xFA
+@TOKEN_LITERAL_END_OBJECT 0xFB
 
 #
 #
 #  Subtype constants for misc text/binary types
 #
 #
-INT_MISC_BINARY_7BIT = 0xE8
-INT_MISC_BINARY_RAW = 0xFD
+@INT_MISC_BINARY_7BIT  0xE8
+@INT_MISC_BINARY_RAW  0xFD
 
 #
 # Type (for misc, other) used for
 # variable length UTF-8 encoded text, when it is known to only contain ASCII chars.
 # Note: 2 LSB are reserved for future use; must be zeroes for now
 #
-TOKEN_MISC_LONG_TEXT_ASCII = 0xE0
+@TOKEN_MISC_LONG_TEXT_ASCII  0xE0
 
 #
 # Type (for misc, other) used
@@ -204,7 +204,7 @@ TOKEN_MISC_LONG_TEXT_ASCII = 0xE0
 # (which means it MAY have multi-byte characters)
 # Note: 2 LSB are reserved for future use; must be zeroes for now
 #
-TOKEN_MISC_LONG_TEXT_UNICODE = 0xE4
+@TOKEN_MISC_LONG_TEXT_UNICODE  0xE4
 
 #
 # Type (for misc, other) used
@@ -213,14 +213,14 @@ TOKEN_MISC_LONG_TEXT_UNICODE = 0xE4
 # in encoded data (like 0xFF)
 # Note: 2 LSB are reserved for future use; must be zeroes for now
 #
-TOKEN_MISC_BINARY_7BIT = INT_MISC_BINARY_7BIT
+@TOKEN_MISC_BINARY_7BIT  INT_MISC_BINARY_7BIT
 
 #
 # Raw binary data marker is specifically chosen as separate from
 # other types, since it can have significant impact on framing
 # (or rather fast scanning based on structure and framing markers).
 #
-TOKEN_MISC_BINARY_RAW = INT_MISC_BINARY_RAW
+@TOKEN_MISC_BINARY_RAW  INT_MISC_BINARY_RAW
 
 #
 #
@@ -229,68 +229,68 @@ TOKEN_MISC_BINARY_RAW = INT_MISC_BINARY_RAW
 # Numeric subtype (2 LSB)
 # indicating 32-bit integer (int)
 #
-TOKEN_MISC_INTEGER_32 = 0x00
+@TOKEN_MISC_INTEGER_32  0x00
 
 #
 # Numeric subtype (2 LSB)
 # indicating 32-bit integer (long)
 #
-TOKEN_MISC_INTEGER_64 = 0x01
+@TOKEN_MISC_INTEGER_64 0x01
 
 #
 # Numeric subtype (2 LSB) for
 # indicating {@link java.math.BigInteger} type.
 #
-TOKEN_MISC_INTEGER_BIG = 0x02
+@TOKEN_MISC_INTEGER_BIG 0x02
 
 #  Note: type 3 (0xF3) reserved for future use
 #
 # Numeric subtype (2 LSB) for
 # indicating 32-bit IEEE single precision floating point number.
 #
-TOKEN_MISC_FLOAT_32 = 0x00
+@TOKEN_MISC_FLOAT_32 0x00
 
 #
 # Numeric subtype (2 LSB)
 # indicating 64-bit IEEE double precision floating point number.
 #
-TOKEN_MISC_FLOAT_64 = 0x01
+@TOKEN_MISC_FLOAT_64 0x01
 
 #
 # Numeric subtype (2 LSB) for
 # indicating {@link java.math.BigDecimal} type.
 #
-TOKEN_MISC_FLOAT_BIG = 0x02
+@TOKEN_MISC_FLOAT_BIG  0x02
 
 #  Note: type 3 (0xF7) reserved for future use
-TOKEN_RESERVED = 0xF7
+@TOKEN_RESERVED  0xF7
 #
 #  Token types for keys
 #
 # Let's use same code for empty key as for empty String value
 #
-TOKEN_KEY_EMPTY_STRING = 0x20
-TOKEN_PREFIX_KEY_SHARED_LONG = 0x30
-TOKEN_KEY_LONG_STRING = 0x34
-TOKEN_PREFIX_KEY_SHARED_SHORT = 0x40
-TOKEN_PREFIX_KEY_ASCII = 0x80
-TOKEN_PREFIX_KEY_UNICODE = 0xC0
+@TOKEN_KEY_EMPTY_STRING  0x20
+@TOKEN_PREFIX_KEY_SHARED_LONG  0x30
+@TOKEN_KEY_LONG_STRING  0x34
+@TOKEN_PREFIX_KEY_SHARED_SHORT  0x40
+@TOKEN_PREFIX_KEY_ASCII  0x80
+@TOKEN_PREFIX_KEY_UNICODE  0xC0
 
 
-ID_NOT_AVAILABLE = -1
-ID_NO_TOKEN = 0
-ID_START_OBJECT = 1
-ID_END_OBJECT = 2
-ID_START_ARRAY = 3
-ID_END_ARRAY = 4
-ID_FIELD_NAME = 5
-ID_STRING = 6
-ID_NUMBER_INT = 7
-ID_NUMBER_FLOAT = 8
-ID_TRUE = 9
-ID_FALSE = 10
-ID_NULL = 11
-ID_EMBEDDED_OBJECT = 12
+@ID_NOT_AVAILABLE -1
+@ID_NO_TOKEN  0
+@ID_START_OBJECT  1
+@ID_END_OBJECT  2
+@ID_START_ARRAY  3
+@ID_END_ARRAY  4
+@ID_FIELD_NAME  5
+@ID_STRING  6
+@ID_NUMBER_INT 7
+@ID_NUMBER_FLOAT  8
+@ID_TRUE  9
+@ID_FALSE 10
+@ID_NULL  11
+@ID_EMBEDDED_OBJECT   12
 
 
 MAX_SHAREABLE_STRING_LENGTH = 64
