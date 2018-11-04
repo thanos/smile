@@ -1,5 +1,8 @@
 # Smile
 
+[![Build Status](https://travis-ci.org/thanos/smile.svg?branch=master)](https://travis-ci.org/thanos/smile)
+
+
 
 An API for serializing and de-serializing Elixir terms using the Smile data interchange format.
 
