@@ -103,7 +103,7 @@ NULL_BIT = 0x0
 # Fourth byte of data header; contains version nibble, may
 # have flags
 #
-@HEADER_BYTE_4   (HEADER_VERSION_0 << 4)
+@HEADER_BYTE_4   (@HEADER_VERSION_0 << 4)
 
 #
 # Indicator bit that indicates whether encoded content may
@@ -293,13 +293,13 @@ NULL_BIT = 0x0
 @ID_EMBEDDED_OBJECT   12
 
 
-@MAX_SHAREABLE_STRING_LENGTH = 64
-@KEYS_BUFFER_SIZE = 1024
-@VALUES_BUFFER_SIZE = 1024
-@EIO = 5
-@ENOMEM = 12
-@MAX_ERROR_MSG_SIZE = 100
-@MAX_WBITS = 15
+@MAX_SHAREABLE_STRING_LENGTH   64
+@KEYS_BUFFER_SIZE  1024
+@VALUES_BUFFER_SIZE   1024
+@EIO   5
+@ENOMEM  12
+@MAX_ERROR_MSG_SIZE   100
+@MAX_WBITS   15
 
 
 @MIN_BUFFER_LENGTH  (3 * 256) + 2
