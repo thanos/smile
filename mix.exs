@@ -1,12 +1,12 @@
-defmodule Smile.MixProject do
+defmodule SmileEx.MixProject do
   use Mix.Project
 
   @version "0.1.0"
-  @source_url "https://github.com/thanos/smile"
+  @source_url "https://github.com/thanos/smile_ex"
 
   def project do
     [
-      app: :smile,
+      app: :smile_ex,
       version: @version,
       elixir: "~> 1.5",
       start_permanent: Mix.env() == :prod,
@@ -14,9 +14,18 @@ defmodule Smile.MixProject do
       description: description(),
       package: package(),
       docs: docs(),
-      name: "Smile",
+      name: "SmileEx",
       source_url: @source_url,
-      homepage_url: @source_url
+      homepage_url: @source_url,
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.html": :test
+      ],
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        flags: [:error_handling, :underspecs]
+      ]
     ]
   end
 
@@ -28,7 +37,14 @@ defmodule Smile.MixProject do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false}
+      # Documentation
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
+
+      # Code quality and testing
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -42,7 +58,7 @@ defmodule Smile.MixProject do
 
   defp package do
     [
-      name: "smile",
+      name: "smile_ex",
       files: ["lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md"],
       maintainers: ["Thanos Vassilakis"],
       licenses: ["MIT"],
@@ -63,7 +79,7 @@ defmodule Smile.MixProject do
       groups_for_modules: [
         "Core API": [Smile],
         "Encoding & Decoding": [Smile.Encoder, Smile.Decoder],
-        "Constants": [Smile.Constants]
+        Constants: [Smile.Constants]
       ]
     ]
   end

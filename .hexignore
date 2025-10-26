@@ -1,0 +1,35 @@
+# Ignore build artifacts
+/_build
+/cover
+/doc
+/deps
+
+# Ignore test files
+/test
+
+# Ignore git files
+/.git
+/.github
+/.gitignore
+
+# Ignore development files
+/.elixir_ls
+/.vscode
+/.idea
+
+# Ignore examples
+/examples
+
+# Ignore temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Ignore CI files
+/.travis.yml
+/.github
+
+# Ignore summary
+/SUMMARY.md
+

@@ -1,8 +1,9 @@
-# Smile
+# SmileEx
 
-[![Hex.pm](https://img.shields.io/hexpm/v/smile.svg)](https://hex.pm/packages/smile)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/smile/)
-[![Hex.pm](https://img.shields.io/hexpm/dt/smile.svg)](https://hex.pm/packages/smile)
+
+[![Hex.pm](https://img.shields.io/hexpm/v/smile_ex.svg)](https://hex.pm/packages/smile_ex)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/smile_ex/)
+[![Hex.pm](https://img.shields.io/hexpm/dt/smile_ex.svg)](https://hex.pm/packages/smile_ex)
 
 
 
@@ -21,12 +22,12 @@ Smile is a computer data interchange format based on JSON. It can be considered 
 
 ## Installation
 
-Add `smile` to your list of dependencies in `mix.exs`:
+Add `smile_ex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:smile, "~> 0.1.0"}
+    {:smile_ex, "~> 0.1.0"}
   ]
 end
 ```
@@ -187,18 +188,33 @@ json = Jason.encode!(data)
 # Plus: faster to encode/decode
 ```
 
-## Testing
+## Development
 
-Run the test suite:
+### Testing
 
 ```bash
+# Run tests
 mix test
+
+# Run tests with coverage
+mix test --cover
+
+# Generate HTML coverage report
+mix coveralls.html
+open cover/excoveralls.html
 ```
 
-Run tests with coverage:
+### Code Quality
 
 ```bash
-mix test --cover
+# Static code analysis
+mix credo
+
+# Security analysis
+mix sobelow
+
+# Type checking (first run takes a while)
+mix dialyzer
 ```
 
 ## Specification
@@ -211,7 +227,14 @@ For more details about the format, see:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please ensure:
+
+1. All tests pass: `mix test`
+2. Code passes static analysis: `mix credo`
+3. No security issues: `mix sobelow`
+4. Code is formatted: `mix format`
+
+Then submit a Pull Request.
 
 ## License
 
@@ -219,7 +242,7 @@ This project is licensed under the MIT License.
 
 ## API Documentation
 
-The complete API documentation is available on [HexDocs](https://hexdocs.pm/smile/).
+The complete API documentation is available on [HexDocs](https://hexdocs.pm/smile_ex/).
 
 You can also generate documentation locally:
 
