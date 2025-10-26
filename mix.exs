@@ -1,28 +1,70 @@
 defmodule Smile.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+  @source_url "https://github.com/thanos/smile"
+
   def project do
     [
       app: :smile,
-      version: "0.1.0",
-      elixir: "~> 1.5.1",
+      version: @version,
+      elixir: "~> 1.5",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: description(),
+      package: package(),
+      docs: docs(),
+      name: "Smile",
+      source_url: @source_url,
+      homepage_url: @source_url
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false}
+    ]
+  end
+
+  defp description do
+    """
+    Elixir encoder and decoder for the Smile binary data interchange format.
+    Smile is a binary format based on JSON that provides better performance
+    and more compact encoding than text-based JSON.
+    """
+  end
+
+  defp package do
+    [
+      name: "smile",
+      files: ["lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md"],
+      maintainers: ["Thanos Vassilakis"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => @source_url,
+        "Specification" => "https://github.com/FasterXML/smile-format-specification",
+        "Wikipedia" => "https://en.wikipedia.org/wiki/Smile_%28data_interchange_format%29"
+      }
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Smile",
+      source_ref: "v#{@version}",
+      source_url: @source_url,
+      extras: ["README.md", "CHANGELOG.md"],
+      groups_for_modules: [
+        "Core API": [Smile],
+        "Encoding & Decoding": [Smile.Encoder, Smile.Decoder],
+        "Constants": [Smile.Constants]
+      ]
     ]
   end
 end
