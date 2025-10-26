@@ -215,7 +215,9 @@ defmodule Smile.Encoder do
 
       # Long ASCII
       ascii?(bytes) ->
-        {:ok, <<C.token_misc_long_text_ascii()::8>> <> encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>, state}
+        {:ok,
+         <<C.token_misc_long_text_ascii()::8>> <>
+           encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>, state}
 
       # Tiny Unicode (2-33 bytes)
       byte_len >= 2 and byte_len <= 33 ->
@@ -229,7 +231,9 @@ defmodule Smile.Encoder do
 
       # Long Unicode
       true ->
-        {:ok, <<C.token_misc_long_text_unicode()::8>> <> encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>, state}
+        {:ok,
+         <<C.token_misc_long_text_unicode()::8>> <>
+           encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>, state}
     end
   end
 
@@ -244,7 +248,8 @@ defmodule Smile.Encoder do
         <<token::8>> <> bytes
 
       ascii?(bytes) ->
-        <<C.token_misc_long_text_ascii()::8>> <> encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
+        <<C.token_misc_long_text_ascii()::8>> <>
+          encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
 
       byte_len >= 2 and byte_len <= 33 ->
         token = C.token_prefix_tiny_unicode() + (byte_len - 2)
@@ -255,7 +260,8 @@ defmodule Smile.Encoder do
         <<token::8>> <> bytes
 
       true ->
-        <<C.token_misc_long_text_unicode()::8>> <> encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
+        <<C.token_misc_long_text_unicode()::8>> <>
+          encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
     end
   end
 
@@ -270,8 +276,13 @@ defmodule Smile.Encoder do
       end)
 
     case items_data do
-      {:error, reason} -> {:error, reason}
-      _ -> {:ok, <<C.token_literal_start_array()::8>> <> items_data <> <<C.token_literal_end_array()::8>>, final_state}
+      {:error, reason} ->
+        {:error, reason}
+
+      _ ->
+        {:ok,
+         <<C.token_literal_start_array()::8>> <> items_data <> <<C.token_literal_end_array()::8>>,
+         final_state}
     end
   end
 
@@ -290,8 +301,13 @@ defmodule Smile.Encoder do
       end)
 
     case items_data do
-      {:error, reason} -> {:error, reason}
-      _ -> {:ok, <<C.token_literal_start_object()::8>> <> items_data <> <<C.token_literal_end_object()::8>>, final_state}
+      {:error, reason} ->
+        {:error, reason}
+
+      _ ->
+        {:ok,
+         <<C.token_literal_start_object()::8>> <>
+           items_data <> <<C.token_literal_end_object()::8>>, final_state}
     end
   end
 
@@ -340,7 +356,8 @@ defmodule Smile.Encoder do
 
       # Long string (with length prefix)
       true ->
-        <<C.token_key_long_string()::8>> <> encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
+        <<C.token_key_long_string()::8>> <>
+          encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
     end
   end
 
@@ -349,9 +366,10 @@ defmodule Smile.Encoder do
     index = length(state.name_list)
 
     if index < C.max_shared_names() do
-      %{state |
-        name_refs: Map.put(state.name_refs, name, index),
-        name_list: state.name_list ++ [name]
+      %{
+        state
+        | name_refs: Map.put(state.name_refs, name, index),
+          name_list: state.name_list ++ [name]
       }
     else
       state
@@ -363,10 +381,12 @@ defmodule Smile.Encoder do
     index = length(state.value_list)
 
     if index < C.max_shared_string_values() do
-      new_state = %{state |
-        value_refs: Map.put(state.value_refs, value, index),
-        value_list: state.value_list ++ [value]
+      new_state = %{
+        state
+        | value_refs: Map.put(state.value_refs, value, index),
+          value_list: state.value_list ++ [value]
       }
+
       {<<>>, new_state}
     else
       {<<>>, state}
@@ -382,7 +402,7 @@ defmodule Smile.Encoder do
 
   defp encode_shared_string_reference(index) do
     # Long reference: 2 bytes
-    <<C.token_prefix_shared_string_long()::8, (index - 31)::8>>
+    <<C.token_prefix_shared_string_long()::8, index - 31::8>>
   end
 
   # Variable-length integer encoding

@@ -482,7 +482,7 @@ defmodule Smile.Decoder do
   end
 
   defp decode_vint_bytes(<<byte::8, rest::binary>>, acc, shift) do
-    value = acc ||| ((byte &&& 0x7F) <<< shift)
+    value = acc ||| (byte &&& 0x7F) <<< shift
 
     if (byte &&& 0x80) == 0 do
       {:ok, value, rest}

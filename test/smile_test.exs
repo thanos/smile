@@ -28,13 +28,15 @@ defmodule SmileTest do
       # Small int range: -16 to +15
       assert {:ok, binary} = Smile.encode(5)
       assert <<0x3A, 0x29, 0x0A, _flags::8, token::8>> = binary
-      assert (token &&& 0xE0) == 0xC0  # Small int prefix
+      # Small int prefix
+      assert (token &&& 0xE0) == 0xC0
     end
 
     test "encodes small negative integers" do
       assert {:ok, binary} = Smile.encode(-5)
       assert <<0x3A, 0x29, 0x0A, _flags::8, token::8>> = binary
-      assert (token &&& 0xE0) == 0xC0  # Small int prefix
+      # Small int prefix
+      assert (token &&& 0xE0) == 0xC0
     end
 
     test "encodes 32-bit integers" do
@@ -284,7 +286,7 @@ defmodule SmileTest do
         "count" => 2,
         "metadata" => %{
           "version" => "1.0",
-          "timestamp" => 1234567890
+          "timestamp" => 1_234_567_890
         }
       }
 

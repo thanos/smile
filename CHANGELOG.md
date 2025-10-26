@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of Smile binary format encoder/decoder for Elixir
+- Initial release of SmileEx binary format encoder/decoder for Elixir
 - Complete implementation of Smile format specification v1.0
 - Support for all JSON-compatible data types (null, boolean, integer, float, string, array, object)
 - Encoding with back-references for field names and string values
@@ -30,5 +30,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Typically 20-40% size reduction compared to JSON
 - Faster encoding and decoding than text-based JSON
 
-[0.1.0]: https://github.com/thanos/smile/releases/tag/v0.1.0
+[0.1.0]: https://github.com/thanos/smile_ex/releases/tag/v0.1.0
 

@@ -50,17 +50,21 @@ defmodule Smile.Constants do
   def max_shared_names, do: 1024
   def max_shared_string_values, do: 1024
   def max_shared_string_length_bytes, do: 65
-  def min_buffer_for_possible_short_string, do: 1 + (3 * 65)
+  def min_buffer_for_possible_short_string, do: 1 + 3 * 65
 
   # Byte markers
   def byte_marker_end_of_string, do: 0xFC
   def byte_marker_end_of_content, do: 0xFF
 
   # Format header
-  def header_byte_1, do: 0x3A  # ':'
-  def header_byte_2, do: 0x29  # ')'
-  def header_byte_3, do: 0x0A  # '\n'
-  def header_byte_4, do: 0x00  # version 0
+  # ':'
+  def header_byte_1, do: 0x3A
+  # ')'
+  def header_byte_2, do: 0x29
+  # '\n'
+  def header_byte_3, do: 0x0A
+  # version 0
+  def header_byte_4, do: 0x00
 
   # Header bits
   def header_bit_has_shared_names, do: 0x01
