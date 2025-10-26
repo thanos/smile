@@ -1,9 +1,11 @@
 # SmileEx
 
+
 [![Hex.pm](https://img.shields.io/hexpm/v/smile_ex.svg)](https://hex.pm/packages/smile_ex)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/smile_ex/)
 [![Hex.pm](https://img.shields.io/hexpm/dt/smile_ex.svg)](https://hex.pm/packages/smile_ex)
-[![Hex.pm](https://img.shields.io/hexpm/l/smile_ex.svg)](https://github.com/thanos/smile_ex/blob/master/LICENSE)
+
+
 
 An Elixir library for encoding and decoding data using the [Smile binary data interchange format](https://en.wikipedia.org/wiki/Smile_%28data_interchange_format%29).
 
