@@ -3,8 +3,8 @@
 [![Hex.pm](https://img.shields.io/hexpm/v/smile.svg)](https://hex.pm/packages/smile)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/smile/)
 [![Hex.pm](https://img.shields.io/hexpm/dt/smile.svg)](https://hex.pm/packages/smile)
-[![Hex.pm](https://img.shields.io/hexpm/l/smile.svg)](https://github.com/thanos/smile/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/thanos/smile.svg?branch=master)](https://travis-ci.org/thanos/smile)
+
+
 
 An Elixir library for encoding and decoding data using the [Smile binary data interchange format](https://en.wikipedia.org/wiki/Smile_%28data_interchange_format%29).
 
