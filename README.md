@@ -161,6 +161,38 @@ Smile provides several advantages over JSON:
 3. **Back References**: Repeated keys/values are stored once and referenced
 4. **Type Efficiency**: Native binary representation of numbers
 
+## Benchmarks
+
+Want to see the performance comparison yourself? Run the included benchmarks:
+
+```bash
+# Comprehensive performance benchmark
+mix run benchmarks/comparison.exs
+
+# Message size comparison (detailed size analysis)
+mix run benchmarks/size_comparison.exs
+
+# Quick comparison
+mix run benchmarks/quick.exs
+```
+
+The benchmarks compare SmileEx against Jason (the popular JSON library) for:
+- Encoding performance
+- Decoding performance
+- Round-trip performance
+- Memory usage
+- Detailed size comparison across various data structures
+
+Typical results show:
+- **Size**: 12-60% reduction depending on data structure (larger gains with repeated keys)
+  - Best: 60%+ for large datasets with consistent structure (product catalogs, logs)
+  - Good: 30-50% for API responses with multiple records
+  - Modest: 10-20% for simple objects and short strings
+- **Speed**: Jason is faster for small payloads, SmileEx competitive on large datasets
+- **Memory**: SmileEx uses more memory due to shared reference tracking
+
+See [`benchmarks/README.md`](benchmarks/README.md) for detailed information.
+
 ## Use Cases
 
 Smile is ideal for:
@@ -192,9 +224,14 @@ json = Jason.encode!(data)
 
 ### Testing
 
+SmileEx uses both traditional unit tests and property-based tests for comprehensive coverage.
+
 ```bash
-# Run tests
+# Run all tests (unit + property tests)
 mix test
+
+# Run only property-based tests
+mix test test/smile_property_test.exs
 
 # Run tests with coverage
 mix test --cover
@@ -203,6 +240,19 @@ mix test --cover
 mix coveralls.html
 open cover/excoveralls.html
 ```
+
+#### Property-Based Testing
+
+SmileEx includes extensive property-based tests using [StreamData](https://hexdocs.pm/stream_data/) that verify correctness across thousands of randomly generated test cases:
+
+- **Round-trip encoding/decoding** for all data types
+- **Type preservation** through encode/decode cycles
+- **Deterministic encoding** (same input → same output)
+- **Header validity** for all encoded data
+- **Encoding options** don't affect correctness
+- **Size optimization** properties
+
+Property tests automatically generate diverse test cases including edge cases, Unicode strings, deeply nested structures, and various numeric ranges. See [`test/property_testing_guide.md`](test/property_testing_guide.md) for details.
 
 ### Code Quality
 
