@@ -9,7 +9,7 @@
 
 An Elixir library for encoding and decoding data using the [Smile binary data interchange format](https://en.wikipedia.org/wiki/Smile_%28data_interchange_format%29).
 
-Use this library only if you have to. I had to, hence I coded it. This library is complete but not performant.
+_Use this library only **if you have to**. I had to, hence I coded it. This library is **complete** but **not performant**._
 
 Smile is a computer data interchange format based on JSON. It can be considered a binary serialization of the generic JSON data model, which means that tools that operate on JSON may be used with Smile as well, as long as a proper encoder/decoder exists. The format is more, in theory, compact and more efficient to process than text-based JSON. It was designed by [FasterXML](https://github.com/FasterXML/smile-format-specification) as a drop-in replacement for JSON with better performance characteristics.
 
