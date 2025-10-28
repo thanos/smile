@@ -224,9 +224,14 @@ json = Jason.encode!(data)
 
 ### Testing
 
+SmileEx uses both traditional unit tests and property-based tests for comprehensive coverage.
+
 ```bash
-# Run tests
+# Run all tests (unit + property tests)
 mix test
+
+# Run only property-based tests
+mix test test/smile_property_test.exs
 
 # Run tests with coverage
 mix test --cover
@@ -235,6 +240,19 @@ mix test --cover
 mix coveralls.html
 open cover/excoveralls.html
 ```
+
+#### Property-Based Testing
+
+SmileEx includes extensive property-based tests using [StreamData](https://hexdocs.pm/stream_data/) that verify correctness across thousands of randomly generated test cases:
+
+- **Round-trip encoding/decoding** for all data types
+- **Type preservation** through encode/decode cycles
+- **Deterministic encoding** (same input → same output)
+- **Header validity** for all encoded data
+- **Encoding options** don't affect correctness
+- **Size optimization** properties
+
+Property tests automatically generate diverse test cases including edge cases, Unicode strings, deeply nested structures, and various numeric ranges. See [`test/property_testing_guide.md`](test/property_testing_guide.md) for details.
 
 ### Code Quality
 
