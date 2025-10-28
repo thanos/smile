@@ -110,94 +110,80 @@ defmodule Smile.Decoder do
     {:error, :invalid_header}
   end
 
-  # Decode values based on token type
+  # Decode values based on token type - literals
+  defp decode_value(<<0x21::8, rest::binary>>, state), do: {:ok, nil, rest, state}
+  defp decode_value(<<0x23::8, rest::binary>>, state), do: {:ok, true, rest, state}
+  defp decode_value(<<0x22::8, rest::binary>>, state), do: {:ok, false, rest, state}
+  defp decode_value(<<0x20::8, rest::binary>>, state), do: {:ok, "", rest, state}
+
+  # Collections
+  defp decode_value(<<0xF8::8, rest::binary>>, state), do: decode_array(rest, state)
+  defp decode_value(<<0xFA::8, rest::binary>>, state), do: decode_object(rest, state)
+
+  # General token decoding
   defp decode_value(<<token::8, rest::binary>>, state) do
-    cond do
-      # Literals
-      token == C.token_literal_null() ->
-        {:ok, nil, rest, state}
-
-      token == C.token_literal_true() ->
-        {:ok, true, rest, state}
-
-      token == C.token_literal_false() ->
-        {:ok, false, rest, state}
-
-      token == C.token_literal_empty_string() ->
-        {:ok, "", rest, state}
-
-      # Start of array
-      token == C.token_literal_start_array() ->
-        decode_array(rest, state)
-
-      # Start of object
-      token == C.token_literal_start_object() ->
-        decode_object(rest, state)
-
-      # Small integers (-16 to +15)
-      (token &&& 0xE0) == C.token_prefix_small_int() ->
-        value = decode_small_int(token)
-        {:ok, value, rest, state}
-
-      # 32-bit integers
-      token == C.token_byte_int_32() ->
-        decode_int32(rest, state)
-
-      # 64-bit integers
-      token == C.token_byte_int_64() ->
-        decode_int64(rest, state)
-
-      # 64-bit floats
-      token == C.token_byte_float_64() ->
-        decode_float64(rest, state)
-
-      # 32-bit floats
-      token == C.token_byte_float_32() ->
-        decode_float32(rest, state)
-
-      # Tiny ASCII strings (1-32 bytes)
-      (token &&& 0xE0) == C.token_prefix_tiny_ascii() ->
-        len = (token &&& 0x1F) + 1
-        decode_string_bytes(rest, len, state)
-
-      # Small ASCII strings (33-64 bytes)
-      (token &&& 0xE0) == C.token_prefix_small_ascii() ->
-        len = (token &&& 0x1F) + 33
-        decode_string_bytes(rest, len, state)
-
-      # Tiny Unicode strings (2-33 bytes)
-      (token &&& 0xE0) == C.token_prefix_tiny_unicode() ->
-        len = (token &&& 0x1F) + 2
-        decode_string_bytes(rest, len, state)
-
-      # Short Unicode strings (34-64 bytes)
-      (token &&& 0xE0) == C.token_prefix_short_unicode() ->
-        len = (token &&& 0x1F) + 34
-        decode_string_bytes(rest, len, state)
-
-      # Long ASCII strings
-      token == C.token_misc_long_text_ascii() ->
-        decode_long_string(rest, state)
-
-      # Long Unicode strings
-      token == C.token_misc_long_text_unicode() ->
-        decode_long_string(rest, state)
-
-      # Shared string references
-      (token &&& 0xE0) == C.token_prefix_shared_string_short() and token > 0 ->
-        index = (token &&& 0x1F) - 1
-        get_shared_string(index, rest, state)
-
-      token == C.token_prefix_shared_string_long() ->
-        decode_long_shared_string(rest, state)
-
-      true ->
-        {:error, {:unknown_token, token}}
+    if (token &&& 0xE0) == C.token_prefix_small_int() do
+      decode_small_int_value(token, rest, state)
+    else
+      decode_value_by_token(token, rest, state)
     end
   end
 
   defp decode_value(<<>>, _state) do
     {:error, :unexpected_end_of_input}
+  end
+
+  # Decode value by specific token
+  defp decode_value_by_token(token, rest, state) do
+    cond do
+      token == C.token_byte_int_32() -> decode_int32(rest, state)
+      token == C.token_byte_int_64() -> decode_int64(rest, state)
+      token == C.token_byte_float_64() -> decode_float64(rest, state)
+      token == C.token_byte_float_32() -> decode_float32(rest, state)
+      true -> decode_string_value(token, rest, state)
+    end
+  end
+
+  # Helper for small integers
+  defp decode_small_int_value(token, rest, state) do
+    value = decode_small_int(token)
+    {:ok, value, rest, state}
+  end
+
+  # Decode string values by token type
+  defp decode_string_value(token, rest, state) do
+    prefix = token &&& 0xE0
+
+    cond do
+      # Short string tokens (by prefix)
+      prefix == C.token_prefix_tiny_ascii() ->
+        decode_string_bytes(rest, (token &&& 0x1F) + 1, state)
+
+      prefix == C.token_prefix_small_ascii() ->
+        decode_string_bytes(rest, (token &&& 0x1F) + 33, state)
+
+      prefix == C.token_prefix_tiny_unicode() ->
+        decode_string_bytes(rest, (token &&& 0x1F) + 2, state)
+
+      prefix == C.token_prefix_short_unicode() ->
+        decode_string_bytes(rest, (token &&& 0x1F) + 34, state)
+
+      prefix == C.token_prefix_shared_string_short() and token > 0 ->
+        get_shared_string((token &&& 0x1F) - 1, rest, state)
+
+      # Long strings and shared references
+      true -> decode_long_string_or_reference(token, rest, state)
+    end
+  end
+
+  # Decode long strings or shared string references
+  defp decode_long_string_or_reference(token, rest, state) do
+    cond do
+      token == C.token_misc_long_text_ascii() -> decode_long_string(rest, state)
+      token == C.token_misc_long_text_unicode() -> decode_long_string(rest, state)
+      token == C.token_prefix_shared_string_long() -> decode_long_shared_string(rest, state)
+      true -> {:error, {:unknown_token, token}}
+    end
   end
 
   # Decode small integers
@@ -280,26 +266,27 @@ defmodule Smile.Decoder do
 
   # Decode long strings (with variable length and terminator)
   defp decode_long_string(binary, state) do
-    case decode_vint(binary) do
-      {:ok, _length, rest} ->
-        # Find the string terminator
-        case :binary.split(rest, <<C.byte_marker_end_of_string()::8>>) do
-          [str_bytes, rest2] ->
-            new_state =
-              if state.shared_values and byte_size(str_bytes) <= C.max_short_value_string_bytes() do
-                add_shared_value(str_bytes, state)
-              else
-                state
-              end
+    with {:ok, _length, rest} <- decode_vint(binary),
+         {:ok, str_bytes, rest2} <- split_at_string_terminator(rest) do
+      new_state = maybe_add_shared_value(str_bytes, state)
+      {:ok, str_bytes, rest2, new_state}
+    end
+  end
 
-            {:ok, str_bytes, rest2, new_state}
+  # Split binary at string terminator
+  defp split_at_string_terminator(binary) do
+    case :binary.split(binary, <<C.byte_marker_end_of_string()::8>>) do
+      [str_bytes, rest] -> {:ok, str_bytes, rest}
+      _ -> {:error, :missing_string_terminator}
+    end
+  end
 
-          _ ->
-            {:error, :missing_string_terminator}
-        end
-
-      {:error, reason} ->
-        {:error, reason}
+  # Add shared value if conditions are met
+  defp maybe_add_shared_value(str_bytes, state) do
+    if state.shared_values and byte_size(str_bytes) <= C.max_short_value_string_bytes() do
+      add_shared_value(str_bytes, state)
+    else
+      state
     end
   end
 
@@ -429,25 +416,27 @@ defmodule Smile.Decoder do
 
   # Decode long field name
   defp decode_long_field_name(binary, state) do
-    case decode_vint(binary) do
-      {:ok, _length, rest} ->
-        case :binary.split(rest, <<C.byte_marker_end_of_string()::8>>) do
-          [name_bytes, rest2] ->
-            new_state =
-              if state.shared_names do
-                add_shared_name(name_bytes, state)
-              else
-                state
-              end
+    with {:ok, _length, rest} <- decode_vint(binary),
+         {:ok, name_bytes, rest2} <- split_at_field_name_terminator(rest) do
+      new_state = maybe_add_shared_name(name_bytes, state)
+      {:ok, name_bytes, rest2, new_state}
+    end
+  end
 
-            {:ok, name_bytes, rest2, new_state}
+  # Split binary at field name terminator
+  defp split_at_field_name_terminator(binary) do
+    case :binary.split(binary, <<C.byte_marker_end_of_string()::8>>) do
+      [name_bytes, rest] -> {:ok, name_bytes, rest}
+      _ -> {:error, :missing_field_name_terminator}
+    end
+  end
 
-          _ ->
-            {:error, :missing_field_name_terminator}
-        end
-
-      {:error, reason} ->
-        {:error, reason}
+  # Add shared name if enabled
+  defp maybe_add_shared_name(name_bytes, state) do
+    if state.shared_names do
+      add_shared_name(name_bytes, state)
+    else
+      state
     end
   end
 
