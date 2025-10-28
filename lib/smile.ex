@@ -36,8 +36,8 @@ defmodule Smile do
   - Byte 4: Version and flags byte
   """
 
-  alias Smile.Encoder
   alias Smile.Decoder
+  alias Smile.Encoder
 
   @doc """
   Encodes an Elixir term into Smile binary format.

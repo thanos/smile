@@ -189,80 +189,67 @@ defmodule Smile.Encoder do
     bytes = :erlang.iolist_to_binary(value)
     byte_len = byte_size(bytes)
 
-    cond do
-      # Check for shared string reference (if enabled and string is short enough)
-      state.shared_values and byte_len <= C.max_short_value_string_bytes() ->
-        case Map.get(state.value_refs, value) do
-          nil ->
-            # Not yet seen, encode and add to references
-            {token, new_state} = add_value_reference(value, state)
-            {:ok, token <> encode_string_bytes(bytes, byte_len), new_state}
+    # Check for shared string reference first
+    if state.shared_values and byte_len <= C.max_short_value_string_bytes() do
+      encode_with_sharing(value, bytes, byte_len, state)
+    else
+      encoded_bytes = encode_string_bytes(bytes, byte_len)
+      {:ok, encoded_bytes, state}
+    end
+  end
 
-          index ->
-            # Use back reference
-            {:ok, encode_shared_string_reference(index), state}
-        end
+  # Handle string encoding with value sharing
+  defp encode_with_sharing(value, bytes, byte_len, state) do
+    case Map.get(state.value_refs, value) do
+      nil ->
+        # Not yet seen, encode and add to references
+        {token, new_state} = add_value_reference(value, state)
+        {:ok, token <> encode_string_bytes(bytes, byte_len), new_state}
 
-      # Tiny ASCII (1-32 bytes, ASCII only)
-      byte_len <= 32 and ascii?(bytes) ->
-        token = C.token_prefix_tiny_ascii() + (byte_len - 1)
-        {:ok, <<token::8>> <> bytes, state}
-
-      # Small ASCII (33-64 bytes, ASCII only)
-      byte_len <= 64 and ascii?(bytes) ->
-        token = C.token_prefix_small_ascii() + (byte_len - 33)
-        {:ok, <<token::8>> <> bytes, state}
-
-      # Long ASCII
-      ascii?(bytes) ->
-        {:ok,
-         <<C.token_misc_long_text_ascii()::8>> <>
-           encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>, state}
-
-      # Tiny Unicode (2-33 bytes)
-      byte_len >= 2 and byte_len <= 33 ->
-        token = C.token_prefix_tiny_unicode() + (byte_len - 2)
-        {:ok, <<token::8>> <> bytes, state}
-
-      # Short Unicode (34-64 bytes)
-      byte_len <= 64 ->
-        token = C.token_prefix_short_unicode() + (byte_len - 34)
-        {:ok, <<token::8>> <> bytes, state}
-
-      # Long Unicode
-      true ->
-        {:ok,
-         <<C.token_misc_long_text_unicode()::8>> <>
-           encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>, state}
+      index ->
+        # Use back reference
+        {:ok, encode_shared_string_reference(index), state}
     end
   end
 
   defp encode_string_bytes(bytes, byte_len) do
-    cond do
-      byte_len <= 32 and ascii?(bytes) ->
-        token = C.token_prefix_tiny_ascii() + (byte_len - 1)
-        <<token::8>> <> bytes
-
-      byte_len <= 64 and ascii?(bytes) ->
-        token = C.token_prefix_small_ascii() + (byte_len - 33)
-        <<token::8>> <> bytes
-
-      ascii?(bytes) ->
-        <<C.token_misc_long_text_ascii()::8>> <>
-          encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
-
-      byte_len >= 2 and byte_len <= 33 ->
-        token = C.token_prefix_tiny_unicode() + (byte_len - 2)
-        <<token::8>> <> bytes
-
-      byte_len <= 64 ->
-        token = C.token_prefix_short_unicode() + (byte_len - 34)
-        <<token::8>> <> bytes
-
-      true ->
-        <<C.token_misc_long_text_unicode()::8>> <>
-          encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
+    if ascii?(bytes) do
+      encode_ascii_string(bytes, byte_len)
+    else
+      encode_unicode_string(bytes, byte_len)
     end
+  end
+
+  # Encode ASCII string
+  defp encode_ascii_string(bytes, byte_len) when byte_len <= 32 do
+    token = C.token_prefix_tiny_ascii() + (byte_len - 1)
+    <<token::8>> <> bytes
+  end
+
+  defp encode_ascii_string(bytes, byte_len) when byte_len <= 64 do
+    token = C.token_prefix_small_ascii() + (byte_len - 33)
+    <<token::8>> <> bytes
+  end
+
+  defp encode_ascii_string(bytes, byte_len) do
+    <<C.token_misc_long_text_ascii()::8>> <>
+      encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
+  end
+
+  # Encode Unicode string
+  defp encode_unicode_string(bytes, byte_len) when byte_len >= 2 and byte_len <= 33 do
+    token = C.token_prefix_tiny_unicode() + (byte_len - 2)
+    <<token::8>> <> bytes
+  end
+
+  defp encode_unicode_string(bytes, byte_len) when byte_len <= 64 do
+    token = C.token_prefix_short_unicode() + (byte_len - 34)
+    <<token::8>> <> bytes
+  end
+
+  defp encode_unicode_string(bytes, byte_len) do
+    <<C.token_misc_long_text_unicode()::8>> <>
+      encode_vint(byte_len) <> bytes <> <<C.byte_marker_end_of_string()::8>>
   end
 
   # Encode arrays

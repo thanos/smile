@@ -97,12 +97,10 @@ defmodule SmilePropertyTest do
       {:ok, decoded} = Smile.decode(encoded)
 
       # Floats need approximate comparison
-      cond do
-        is_float(value) ->
-          assert_in_delta decoded, value, 0.000001
-
-        true ->
-          assert decoded == value
+      if is_float(value) do
+        assert_in_delta decoded, value, 0.000001
+      else
+        assert decoded == value
       end
     end
   end
