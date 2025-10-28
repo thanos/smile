@@ -44,7 +44,11 @@ defmodule SmileEx.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.18", only: :test},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+
+      # Benchmarking and comparison
+      {:benchee, "~> 1.5.0", only: :dev, runtime: false},
+      {:jason, "~> 1.4", only: [:dev, :test]}
     ]
   end
 

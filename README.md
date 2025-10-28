@@ -161,6 +161,38 @@ Smile provides several advantages over JSON:
 3. **Back References**: Repeated keys/values are stored once and referenced
 4. **Type Efficiency**: Native binary representation of numbers
 
+## Benchmarks
+
+Want to see the performance comparison yourself? Run the included benchmarks:
+
+```bash
+# Comprehensive performance benchmark
+mix run benchmarks/comparison.exs
+
+# Message size comparison (detailed size analysis)
+mix run benchmarks/size_comparison.exs
+
+# Quick comparison
+mix run benchmarks/quick.exs
+```
+
+The benchmarks compare SmileEx against Jason (the popular JSON library) for:
+- Encoding performance
+- Decoding performance
+- Round-trip performance
+- Memory usage
+- Detailed size comparison across various data structures
+
+Typical results show:
+- **Size**: 12-60% reduction depending on data structure (larger gains with repeated keys)
+  - Best: 60%+ for large datasets with consistent structure (product catalogs, logs)
+  - Good: 30-50% for API responses with multiple records
+  - Modest: 10-20% for simple objects and short strings
+- **Speed**: Jason is faster for small payloads, SmileEx competitive on large datasets
+- **Memory**: SmileEx uses more memory due to shared reference tracking
+
+See [`benchmarks/README.md`](benchmarks/README.md) for detailed information.
+
 ## Use Cases
 
 Smile is ideal for:
